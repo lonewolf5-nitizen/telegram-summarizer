@@ -1,18 +1,15 @@
-api=34732992
-apih='e90a20bbc71e4ed820c0e2ac61342478'
-gapi="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"
-
-
+import os
 import json
 import requests
-import re
 from groq import Groq
-import win32com.client as wincl
-al = ["urgent", "important", "emergency", "deadline", "asap", "immediately", "critical", "help", "exam", "tomorrow"]
 from datetime import datetime as dt, timedelta as td, timezone as z
 from telethon import TelegramClient
 
+import os
 
+api = os.getenv("API_ID")
+apih = os.getenv("API_HASH")
+gapi = os.getenv("GROQ_API_KEY")
 class Fetcher:
     def __init__(self, api_id, api_hash):
         self.api_id = api_id
@@ -42,45 +39,21 @@ class Summarizer:
     def __init__(self):
      self.summary=[]   
      self.kwords=["because", "since", "therefore", "thus", "hence", "result", "but", "however", "although", "yet","conclusion", "overall", "finally", "importantly", "significantly","is defined as", "refers to", "means","transformed", "urgent", "important", "emergency", "deadline", "asap", "immediately", "critical", "help", "exam", "tomorrow"] 
-    def input_(self):
-     self.text = f.lk
         
-    def summarye(self):
-        text2=self.text.lower()
-        sen= re.split(r'[.!?]\s+', self.text)
-        sen2=re.split(r'[.!?]\s+', text2)
-        for i in range(len(sen2)):
-         x = sen2[i] 
-         y = sen[i] 
-         z=x.split()
-         for u in z:
-             if u in self.kwords:
-                 if y not in self.summary:
-                      self.summary.append(y)
-    def abstsum(self):
+    
+    def abstsum(self, text):
        client = Groq(api_key=gapi)
        self.response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
         {"role": "system", "content": "You are a text summarizer. Summarize the given text in  concise sentences.Address the recipient as 'you' or 'your', not as a third person.And if codes are shared ignore it"},
-        {"role": "user", "content": self.text}
+        {"role": "user", "content": text}
      ]
      ) 
        self.yet=self.response.choices[0].message.content
     def displat(self):
        print(self.yet)
-    def display(self):
-      print("Summary :")
-      for i in self.summary:
-          print("*", end=" ")
-          print(i)
-    def alert(self):
-       speaker = wincl.Dispatch("SAPI.SpVoice")
-       voices= speaker.GetVoices()
-       speaker.Voice= voices.Item(1)
-       speaker.Rate = 3
-       speaker.Volume = 100
-       speaker.Speak("ALERT U HAVE AN EMERGENCY")
+    
     def noti(self):
         requests.post("https://ntfy.sh/summary",data=self.yet.encode('utf-8'))
     def save(self):
@@ -91,8 +64,6 @@ class Summarizer:
           }
         print(f"{data['timestamp']}\n{data['summary']}")
 w=Summarizer()
-w.input_()
-w.abstsum()
+w.abstsum(f.lk)
 w.displat()
 w.noti()
-w.save()
