@@ -18,8 +18,8 @@ class Fetcher:
         self.messages = []
         self.lk=" "
 
-    async def fetch(self, hours=24):
-        two_hrs_ago = dt.now(z.utc) - td(hours=24)
+    async def fetch(self, hours=2):
+        two_hrs_ago = dt.now(z.utc) - td(hours=2)
         async for dialog in self.client.iter_dialogs(limit=5):
             async for message in self.client.iter_messages(dialog.id):
                 if message.date < two_hrs_ago:
